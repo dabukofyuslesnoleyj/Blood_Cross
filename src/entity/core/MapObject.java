@@ -259,5 +259,20 @@ public abstract class MapObject {
 			g.drawImage(this.animation.getImage(),(int)(x+xmap-width/2+width),(int)(y+ymap-height/2),-width,height,null);
 		}
 	}
+	public PlayState getState() {
+		return state;
+	}
+
+	public void setState(PlayState state) {
+		this.state = state;
+	}
+
+	public TileMap getTileMap() {
+		return tileMap;
+	}
+
+	public void setTileMap(TileMap tileMap) {
+		this.tileMap = tileMap;
+	}
 	
 }
