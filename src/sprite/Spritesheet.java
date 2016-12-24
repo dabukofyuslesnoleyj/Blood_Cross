@@ -3,13 +3,14 @@ package sprite;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 public class Spritesheet {
 
 	private BufferedImage spriteSheet;
-	private BufferedImage[][] frames;
+	private ArrayList<BufferedImage> frameList;
 	private int xThreshold;
 	private int yThreshold;
 	private int rows;
@@ -42,6 +43,9 @@ public class Spritesheet {
 	}
 	
 	public void parse(){
+		
+		this.frameList = new ArrayList<BufferedImage>();
+		
 		try {
 			
 			this.rows = this.spriteSheet.getHeight() / this.yThreshold;
@@ -51,8 +55,9 @@ public class Spritesheet {
 				for(int j = 0; j < cols; j++){
 					BufferedImage frame = spriteSheet.getSubimage(j*xThreshold, 
 							i*yThreshold, xThreshold, yThreshold);
-					if(isValid(frame))
-						this.frames[i][j] = frame; //checks if subimage is not fully transparent/blank
+					if(isValid(frame)){
+						this.frameList.add(frame); //adds if the frame is not blank
+					}
 					else
 						break;	//stops parsing the next images in the row
 				}
@@ -63,53 +68,29 @@ public class Spritesheet {
 		}
 	}
 	
-	public BufferedImage[] getRow(int row){
-		try {
+	public BufferedImage[] getFrames(int... args){
 		
-			BufferedImage[] bi = new BufferedImage[cols];
-			
-			for(int i = 0; i < cols; i++){
-				bi[i] = frames[row][i];
+		//giving no input will return the entire sheet
+		if(args.length == 0){
+			BufferedImage[] bi = new BufferedImage[frameList.size()];
+			for (int i = 0; i < frameList.size(); i++) {
+				bi[i] = frameList.get(i);
 			}
 			
 			return bi;
-		} catch (Exception e) {
-			// TODO: handle exception
 		}
-		return null;
-	}
-	
-	private BufferedImage[] convert_2Dto1D(){
-		
-		BufferedImage[] bi = new BufferedImage[this.rows*this.cols];
-		
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < cols; j++){
-				bi[i+j] = frames[i][j];
-			}
-		}
-		
-		return bi;
-	}
-	
-	public BufferedImage[] getFrames(int... args){
 		
 		BufferedImage[] bi = new BufferedImage[args.length];
-		BufferedImage[] sheet = convert_2Dto1D();
-		for(int i = 0; i < sheet.length; i++) {
-			for (int j = 0; j < args.length; j++) {
-				if(args[j] == i)
-					bi[j] = sheet[i];
+		
+		for(int i = 0; i < args.length; i++){
+			for(int j = 0; j < frameList.size(); j++){
+				if(args[i] == j)
+					bi[i] = frameList.get(j);
 			}
-		}		
+		}
 		
 		return bi;
 		
-	}
-	
-	public BufferedImage getFrame(int frame){
-		BufferedImage[] sheet = convert_2Dto1D();
-		return sheet[frame];
 	}
 	
 	/**
