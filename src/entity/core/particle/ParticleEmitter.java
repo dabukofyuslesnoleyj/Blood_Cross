@@ -51,13 +51,13 @@ public class ParticleEmitter {
 		return activeParticles.size();
 	}
 	
-	public ArrayList<Particle> generateRawParticles(MapObject obj, Color color, int life, int size, int amount, boolean damaging) {
+	public ArrayList<Particle> generateRawParticles(MapObject obj, Color color, double life, double size, int amount, double dispersionRate, boolean damaging) {
 		ArrayList<Particle> particles = new ArrayList<Particle>();
 		
 		for(int i = 0; i < amount; i++) {
-			int s = (int) (Math.random()*size);
-            int l = (int) Math.random()*(120)+life;
-			particles.add(new RawParticle(obj, color, l, s, damaging));
+			double s = Math.random()*size;
+			double l = Math.random()*(120)+life;
+			particles.add(new RawParticle(obj, color, l, s, dispersionRate, damaging));
 		}
 		
 		return particles;
