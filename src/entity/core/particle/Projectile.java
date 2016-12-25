@@ -32,8 +32,8 @@ public abstract class Projectile extends MapObject{
 			return;
 		this.isHit = true;
 
-//		ParticleEmitter.getInstance().emit(new SpriteParticle(this, this.hitSprites, 70)); //if you want to show the sprites
-		ParticleEmitter.getInstance().emit(ParticleEmitter.getInstance().generateRawParticles(this, Color.red, 50, 5, 50, false)); //if you want raw (only for testing)
+		ParticleEmitter.getInstance().emit(new SpriteParticle(this, this.hitSprites, 70, false)); //if you want to show the sprites
+//		ParticleEmitter.getInstance().emit(ParticleEmitter.getInstance().generateRawParticles(this, Color.red, 50, 5, 50, false)); //if you want raw (only for testing)
 		this.dx = 0;
 	}
 	
