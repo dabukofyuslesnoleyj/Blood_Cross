@@ -13,6 +13,7 @@ public abstract class Particle extends MapObject{
 
 		this.x = obj.getX();
 		this.y = obj.getY();
+		this.setMapPosition();
 		
 		this.remove = false;
 	}
