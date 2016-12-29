@@ -1,57 +1,38 @@
 package entity.core.particle;
 
-import java.awt.image.BufferedImage;
-
-import entity.core.Animation;
 import entity.core.MapObject;
-import game_state.core.PlayState;
-import tile_map.TileMap;
+import entity.core.NPC;
 
-public class Particle extends MapObject{
+public abstract class Particle extends MapObject{
 	
-	private boolean remove;
+	protected boolean remove;
+	protected boolean damaging;
 	
-	//if you just want to generate particles. lighter method
-	public Particle(TileMap tm, PlayState state, BufferedImage sprites[], int life, double x, double y) {
-		super(tm, state);
-		
-		this.x = x;
-		this.y = y;
-		
-		this.animation = new Animation();
-		this.animation.setFrames(sprites);
-		this.animation.setDelay(life);
-
-	}
-
-	//if you want to bind the particles to a map object
-	public Particle(MapObject obj, TileMap tm, PlayState state, BufferedImage sprites[], int life) {
-		super(tm, state);
+	public Particle(MapObject obj) {
+		super(obj.getTileMap(), obj.getState());
 
 		this.x = obj.getX();
 		this.y = obj.getY();
-		this.width = obj.getWidth();
-		this.height = obj.getHeight();
-		this.cheight = obj.getCheight();
-		this.cwidth = obj.getCwidth();
-
-		this.animation = new Animation();
-		this.animation.setFrames(sprites);
-		this.animation.setDelay(life);
-	}
-	
-	public void update() {
-		super.update();
-//		System.out.println("PLAY");
-		if(this.animation.hasPlayedOnce()){
-			this.remove = true;
-		}
-
-		this.animation.update();
+		this.setMapPosition();
+		
+		this.remove = false;
 	}
 	
 	public boolean shouldRemove() {
 		return remove;
+	}
+	
+	public void checkCollision() {
+		for (NPC e : this.state.getEnemies()) {
+			System.out.println("check fire ball");
+			if(this.intersects(e)){
+				System.out.println("get Hit enemy");
+				e.hit(2, 400);
+				this.remove = true;
+				
+				break;
+			}
+		}
 	}
 
 }

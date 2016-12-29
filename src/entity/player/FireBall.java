@@ -1,10 +1,12 @@
 package entity.player;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
 import entity.core.Animation;
+import entity.core.particle.ParticleEmitter;
 import entity.core.particle.Projectile;
 import game_state.core.PlayState;
 import tile_map.TileMap;
@@ -63,8 +65,9 @@ public class FireBall extends Projectile{
 		
 		if(dx == 0 && !this.isHit) {
 			this.setHit();
-		}
-		
+		}		
+
+		ParticleEmitter.getInstance().emit(ParticleEmitter.getInstance().generateRawParticles(this, new Color(255,140,0), 8, 5, 20, 1.5, false));
 		this.animation.update();
 		if(isHit && this.animation.hasPlayedOnce()){
 			this.remove = true;

@@ -1,7 +1,10 @@
 package entity.core.particle;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
+import entity.core.MapObject;
 
 public class ParticleEmitter {
 	
@@ -22,6 +25,10 @@ public class ParticleEmitter {
 		this.activeParticles.add(particle);
 	}
 	
+	public void emit(ArrayList<Particle> particle) {
+		this.activeParticles.addAll(particle);
+	}
+	
 	public void update() {
 		for (int i = 0; i < activeParticleCount(); i++) {
 			if(activeParticles.get(i).shouldRemove())
@@ -33,7 +40,10 @@ public class ParticleEmitter {
 	
 	public void draw(Graphics2D g) {
 		for (int i = 0; i < activeParticleCount(); i++) {
-			activeParticles.get(i).draw(g);
+			if(activeParticles.get(i).shouldRemove())
+				activeParticles.remove(i);
+			else
+				activeParticles.get(i).draw(g);
 		}
 	}
 	
@@ -41,14 +51,16 @@ public class ParticleEmitter {
 		return activeParticles.size();
 	}
 	
-//	public ArrayList<Particle> generateParticles(int amount) {
-//		ArrayList<Particle> particles = new ArrayList<Particle>();
-//		
-//		for(int i = 0; i < amount; i++) {
-//			particles.add(new Particle(tm, state));
-//		}
-//		
-//		return particles;
-//	}
+	public ArrayList<Particle> generateRawParticles(MapObject obj, Color color, double life, double size, int amount, double dispersionRate, boolean damaging) {
+		ArrayList<Particle> particles = new ArrayList<Particle>();
+		
+		for(int i = 0; i < amount; i++) {
+			double s = Math.random()*size;
+			double l = Math.random()*(120)+life;
+			particles.add(new RawParticle(obj, color, l, s, dispersionRate, damaging));
+		}
+		
+		return particles;
+	}
 
 }
