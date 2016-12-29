@@ -5,17 +5,18 @@ import java.util.ArrayList;
 import entity.HUD;
 import entity.core.NPC;
 import entity.player.Player;
+import entity.player.complex.ComplexPlayer;
 
 public abstract class PlayState extends GameState{
 	
-	protected Player player;
+	protected ArrayList<ComplexPlayer> players;
 	protected ArrayList<NPC> enemies;
 	protected HUD hud;
-	public Player getPlayer() {
-		return player;
+	public ArrayList<ComplexPlayer> getPlayer() {
+		return players;
 	}
-	public void setPlayer(Player player) {
-		this.player = player;
+	public void setPlayer(ArrayList<ComplexPlayer> players) {
+		this.players = players;
 	}
 	public ArrayList<NPC> getEnemies() {
 		return enemies;

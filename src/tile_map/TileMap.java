@@ -177,7 +177,12 @@ public class TileMap {
 	}
 	
 	public int getType(int row, int col){
-		int rc = map[row][col];
+		int rc = 0;
+		try {
+			rc = map[row][col];
+		}catch(ArrayIndexOutOfBoundsException e) {
+			//TODO: change this
+		}
 		
 		int r = rc / this.numTilesAcross;
 		int c = rc % this.numTilesAcross;

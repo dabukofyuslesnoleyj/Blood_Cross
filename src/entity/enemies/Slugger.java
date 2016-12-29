@@ -8,16 +8,18 @@ import javax.imageio.ImageIO;
 import entity.core.Animation;
 import entity.core.NPC;
 import entity.player.Player;
+import entity.player.complex.ComplexPlayer;
 import game_state.core.PlayState;
+import sprite.Spritesheet;
 import tile_map.TileMap;
 
 public class Slugger extends NPC{
 
 	private BufferedImage[] sprites;
 	private BufferedImage[] deathSgprites;
-	private Player player;
+	private ComplexPlayer player;
 	
-	public Slugger(TileMap tm, Player player, PlayState state) {
+	public Slugger(TileMap tm, ComplexPlayer player, PlayState state) {
 		super(tm, 2, 0, 1, state);
 		
 		this.player = player;
@@ -29,20 +31,21 @@ public class Slugger extends NPC{
 		
 		this.jumpStart = 5.6;
 		
-		this.width = 30;
-		this.height = 30;
-		this.cwidth = 20;
-		this.cheight = 20;
+		this.width = 135;
+		this.height = 135;
+		this.cwidth = 30;
+		this.cheight = 120;
 		
 		//load sprites
-		this.sprites = new BufferedImage[3];
 		try {
 			
-			BufferedImage spriteSheet = ImageIO.read(this.getClass().getResourceAsStream("/Sprites/Enemies/slugger.gif"));
+			BufferedImage spriteSheet = ImageIO.read(this.getClass().getResourceAsStream("/Sprites/Player/playersprites Alt.gif"));
 			
-			for (int i = 0; i < sprites.length; i++) {
-				sprites[i] = spriteSheet.getSubimage(i*width, 0, width, height);
-			}
+			Spritesheet sh = new Spritesheet(spriteSheet);
+			sh.setThresholds(135, 135);
+			sh.parse();
+			this.sprites = sh.getFrames(4,5,6,7,8,9);
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

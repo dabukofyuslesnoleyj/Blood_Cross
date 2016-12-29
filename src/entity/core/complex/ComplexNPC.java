@@ -8,8 +8,8 @@ public abstract class ComplexNPC extends ComplexUnit implements Lootable{
 
 	public ComplexNPC(TileMap tm, double endurance, double strength,
 			double dexterity, double intelligence, double vitality,
-			double agility, PlayState state) {
-		super(tm, endurance, strength, dexterity, intelligence, vitality, agility, state);
+			double agility, int maxHealth, int maxEnergy, PlayState state) {
+		super(tm, endurance, strength, dexterity, intelligence, vitality, agility, maxHealth, maxEnergy, state);
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -12,10 +12,7 @@ public abstract class Skill implements Usable{
 	private long lastCast;
 	private long elapsed;
 	
-	protected ComplexUnit caster;
-	
-	public Skill(ComplexUnit caster, int cost, int effectValue, long castTime, long cooldown){
-		this.caster = caster;
+	public Skill(int cost, int effectValue, long castTime, long cooldown){
 		this.cost = cost;
 		this.effectValue = effectValue;
 		this.castTime = castTime;
@@ -25,7 +22,8 @@ public abstract class Skill implements Usable{
 	
 	public void cast(ComplexUnit u){
 		this.elapsed = System.nanoTime()/1000000;
-		if(lastCast == 0 || elapsed == lastCast+cooldown){
+
+		if(lastCast == 0 || elapsed >= lastCast+cooldown){
 			lastCast = elapsed;
 			
 			this.use(u);

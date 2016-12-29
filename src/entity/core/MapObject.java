@@ -88,11 +88,11 @@ public abstract class MapObject {
 	}
 	
 	public void calculateCorners(double x, double y){
-		
 		int leftTile = (int)(x - cwidth / 2) / tileSize;
         int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
         int topTile = (int)(y - cheight / 2) / tileSize;
         int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
+
         if(topTile < 0 || bottomTile >= tileMap.getNumRows() ||
                 leftTile < 0 || rightTile >= tileMap.getNumCols()) {
                 topLeft_isBlocked = topRight_isBlocked = bottomLeft_isBlocked = bottomRight_isBlocked = false;
@@ -258,6 +258,30 @@ public abstract class MapObject {
 		else{
 			g.drawImage(this.animation.getImage(),(int)(x+xmap-width/2+width),(int)(y+ymap-height/2),-width,height,null);
 		}
+	}
+
+	public PlayState getState() {
+		return state;
+	}
+
+	public void setState(PlayState state) {
+		this.state = state;
+	}
+
+	public TileMap getTileMap() {
+		return tileMap;
+	}
+
+	public void setTileMap(TileMap tileMap) {
+		this.tileMap = tileMap;
+	}
+
+	public boolean isFacingRight() {
+		return isFacingRight;
+	}
+
+	public void setFacingRight(boolean isFacingRight) {
+		this.isFacingRight = isFacingRight;
 	}
 	
 }

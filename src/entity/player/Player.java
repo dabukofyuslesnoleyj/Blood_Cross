@@ -1,6 +1,8 @@
 package entity.player;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,43 +10,35 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import entity.core.NPC;
-import entity.core.Unit;
+import entity.core.complex.loot.Lootable;
+import entity.core.element.ParticleEmitter;
+import entity.core.element.ProjectileEmitter;
+import entity.player.complex.ComplexPlayer;
 import game_state.core.PlayState;
+import mechanics.skills.CastFireBall;
+import mechanics.skills.Scratch;
+import mechanics.skills.core.Skill;
+import mechanics.skills.core.SkillSet;
 import sprite.Spritesheet;
 import tile_map.TileMap;
 
-public class Player extends Unit{
+public class Player extends ComplexPlayer{
 	
-	//range attack
+	//skill that player is using
 	private boolean firing;
-	private int fireCost;
-	private int fireDamage;
-	private ArrayList<FireBall> fireballs;
-	
+	private boolean scratching;
+
 	private boolean weaponIsDrawn;
 	private boolean drawingWeapon;
 	private boolean keepingWeapon;
-	
-	//melee attack
-	private boolean scratching;
-	private int scratchDamage;
-	private int scratchRange;
 	
 	//gliding
 	private boolean gliding;
 	
 	//animations
 	private HashMap<Integer, BufferedImage[]> spriteMap;
-//	private ArrayList<BufferedImage[]> sprites;
-	private final int numFrames[] = {
-		4, 6, 1, 2, 2, 7, 2	
-	};
 	
 	//animation actions
-	private static final int IDLE = 0;
-	private static final int WALKING = 1;
-	private static final int JUMPING = 2;
-	private static final int FALLING = 3;
 	private static final int GLIDING = 4;
 	private static final int FIREBALL = 5;
 	private static final int SCRATCHING = 6;
@@ -52,7 +46,7 @@ public class Player extends Unit{
 	private static final int KEEPING = 8;
 	
 	public Player(TileMap tm, int maxHealth, int maxEnergy, PlayState state) {
-		super(tm, maxHealth, maxEnergy, state);
+		super(tm, 7, 10, 10, 10, 10, 10, maxHealth, maxEnergy, state);
 		this.width = 135;
 		this.height = 135;
 		this.cwidth = 30;
@@ -68,16 +62,9 @@ public class Player extends Unit{
 		
 		this.isFacingRight = true;
 		
-		this.fireCost = 200;
-		this.fireDamage = 5;
-		this.fireballs = new ArrayList<FireBall>();
-		
 		this.drawingWeapon = false;
 		this.weaponIsDrawn = false;
 		this.keepingWeapon = false;
-		
-		this.scratchDamage = 8;
-		this.scratchRange = 40;
 		
 		//load sprites
 		try {
@@ -109,6 +96,10 @@ public class Player extends Unit{
 		this.currAction = IDLE;
 		this.animation.setFrames(this.spriteMap.get(IDLE));
 		this.animation.setDelay(400);
+		
+		//add skills
+		this.addSkillFromSet("Cast Fireball");
+		this.addSkillFromSet("Scratch");
 	}
 	
 	//methods
@@ -131,42 +122,6 @@ public class Player extends Unit{
 		
 	}
 	
-	//scratch will become generalized melee attack method.
-	public void scratch(ArrayList<NPC> enemies) {
-		for(NPC e : enemies) {
-			if(e.getY() > y - height/2 && e.getY() < y + height/2)
-				if((e.getX() > x && e.getX() < x + scratchRange && isFacingRight) 
-						|| (e.getX() < x && e.getX() > x - scratchRange &&!isFacingRight))
-					e.hit(this.scratchDamage, 400);
-		}
-	}
-	
-//	public void checkAttackEnemies(ArrayList<NPC> enemies){
-//		
-//			for (NPC e : enemies) {
-//				
-//				for (FireBall f : fireballs) {
-//					System.out.println("check fire ball");
-//					if(f.intersects(e)){
-//						System.out.println("get Hit enemy");
-//						e.hit(fireDamage, 400);
-//						f.setHit();
-//						
-//						break;
-//					}
-//				}
-//				
-//				if(scratching){
-//					if(e.getY() > y - height/2 && e.getY() < y + height/2)
-//						if((e.getX() > x && e.getX() < x + scratchRange && isFacingRight) 
-//								|| (e.getX() < x && e.getX() > x - scratchRange &&!isFacingRight))
-//							e.hit(this.scratchDamage, 400);
-//				}
-//				
-//				
-//			}
-//	}
-	
 	@Override
 	public void update(){
 		
@@ -179,8 +134,10 @@ public class Player extends Unit{
 		
 		//check if attacking
 		if(currAction == SCRATCHING){
-			if(this.animation.hasPlayedOnce())
+			if(this.animation.hasPlayedOnce()) {
+//				this.scratch(this.state.getEnemies());
 				this.scratching = false;
+			}
 		}
 		
 		if(currAction == DRAWING){
@@ -209,21 +166,15 @@ public class Player extends Unit{
 			this.energy = this.maxEnergy;
 		}
 		if(this.firing && currAction != FIREBALL){
-			if(energy >= fireCost){
-				this.energy -= this.fireCost;
-				FireBall fb = new FireBall(this.tileMap, isFacingRight, this.state);
-				fb.setPosition(x, y);
-				this.fireballs.add(fb);
-			}
+//			if(energy >= fireCost){
+//				this.energy -= this.fireCost;
+//				FireBall fb = new FireBall(this.tileMap, isFacingRight, this.state);
+//				fb.setPosition(x, y);
+//				ProjectileEmitter.getInstance().emit(fb);
+//			}
+			this.castSkill("Cast Fireball", this);
 		}
-		for(int i = 0; i < this.fireballs.size(); i++){
-			this.fireballs.get(i).update();
-			if(this.fireballs.get(i).shouldRemove()){
-				this.fireballs.remove(i);
-				i--;
-			}
-		}
-		
+
 		//set animations
 		if(this.scratching){
 			if(this.currAction != SCRATCHING){
@@ -231,6 +182,7 @@ public class Player extends Unit{
 				this.animation.setFrames(this.spriteMap.get(SCRATCHING));
 				this.animation.setDelay(200);
 				this.width = 135;
+				this.castSkill("Scratch", this);
 			}
 		}
 		else if(this.drawingWeapon && !keepingWeapon){
@@ -313,10 +265,6 @@ public class Player extends Unit{
 	
 	public void draw(Graphics2D g){
 	
-		for(FireBall f: this.fireballs){
-			f.draw(g);
-		}
-		
 		//draw player
 		if(flinching){
 			long elapsed = (System.nanoTime() - flinchTime) / 1000000;
@@ -355,6 +303,54 @@ public class Player extends Unit{
 			this.keepingWeapon = true;
 			this.weaponIsDrawn = false;
 			this.firing = false;
+		}
+	}
+
+	@Override
+	public void setLevelLimit(int levelLimit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void takeLoot(Lootable lootable) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressedAction(int k) {
+		super.keyPressedAction(k);
+		
+		if(k == KeyEvent.VK_SPACE){
+			if(this.isFalling()){
+				this.setGliding(true);
+			}
+			else
+				this.setJumping(true);
+		}
+		if(k == KeyEvent.VK_Q){
+			this.setScratching();
+			//will trigger scratch damage if enemy is near enough
+		}
+		if(k == KeyEvent.VK_E){
+			this.setFiring();
+		}
+	}
+
+	@Override
+	public void keyReleasedAction(int k) {
+		super.keyReleasedAction(k);
+		
+		if(k == KeyEvent.VK_SPACE){
+			if(this.isFalling()){
+				this.setGliding(false);
+			}
+			else
+				this.setJumping(false);
+		}
+		if(k == KeyEvent.VK_E){
+			this.setKeeping();
 		}
 	}
 

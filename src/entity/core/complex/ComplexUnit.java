@@ -42,8 +42,8 @@ public abstract class ComplexUnit extends Unit{
 	
 	//constructor
 	public ComplexUnit(TileMap tm, double endurance, double strength, 
-			double dexterity, double intelligence, double vitality, double agility, PlayState state) {
-		super(tm, 0, 0, state);
+			double dexterity, double intelligence, double vitality, double agility, int maxHealth, int maxEnergy, PlayState state) {
+		super(tm, maxHealth, maxEnergy, state);
 		this.init(endurance, strength, dexterity, intelligence, vitality, agility);
 	}
 	

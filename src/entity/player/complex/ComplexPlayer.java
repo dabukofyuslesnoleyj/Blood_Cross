@@ -1,8 +1,13 @@
 package entity.player.complex;
 
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
 import entity.core.complex.ComplexUnit;
 import entity.core.complex.loot.Looter;
 import game_state.core.PlayState;
+import mechanics.skills.UseItem;
+import mechanics.skills.core.Skill;
 import tile_map.TileMap;
 
 public abstract class ComplexPlayer extends ComplexUnit implements CanLevelUp, Looter{
@@ -11,10 +16,15 @@ public abstract class ComplexPlayer extends ComplexUnit implements CanLevelUp, L
 	private double experience;
 	private double threshold;
 	
+	protected static final int IDLE = 0;
+	protected static final int WALKING = 1;
+	protected static final int JUMPING = 2;
+	protected static final int FALLING = 3;
+	
 	public ComplexPlayer(TileMap tm, double endurance, double strength,
 			double dexterity, double intelligence, double vitality,
-			double agility, PlayState state) {
-		super(tm, endurance, strength, dexterity, intelligence, vitality, agility, state);
+			double agility, int maxHealth, int maxEnergy, PlayState state) {
+		super(tm, endurance, strength, dexterity, intelligence, vitality, agility, maxHealth, maxEnergy, state);
 	}
 
 	public void update(){
@@ -75,6 +85,35 @@ public abstract class ComplexPlayer extends ComplexUnit implements CanLevelUp, L
 		this.threshold = threshold;
 	}
 	
+	public void keyPressedAction(int k) {
+		if(k == KeyEvent.VK_LEFT){
+			this.setLeft(true);
+		}
+		if(k == KeyEvent.VK_RIGHT){
+			this.setRight(true);
+		}
+		if(k == KeyEvent.VK_UP){
+			this.setUp(true);
+		}
+		if(k == KeyEvent.VK_DOWN){
+			this.setDown(true);
+		}
+	}
 	
+	public void keyReleasedAction(int k) {
+		if(k == KeyEvent.VK_LEFT){
+			this.setLeft(false);
+		}
+		if(k == KeyEvent.VK_RIGHT){
+			this.setRight(false);
+		}
+		if(k == KeyEvent.VK_UP){
+			this.setUp(false);
+		}
+		if(k == KeyEvent.VK_DOWN){
+			this.setDown(false);
+		}
+		
+	}
 
 }
