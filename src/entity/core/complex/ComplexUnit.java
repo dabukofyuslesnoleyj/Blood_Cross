@@ -205,11 +205,11 @@ public abstract class ComplexUnit extends Unit{
 		this.attackSpeed = (agility*0.1 + dexterity*0.1);
 	}
 
-	public int getMaxStamina() {
+	public float getMaxStamina() {
 		return maxStamina;
 	}
 	
-	public int getStamina() {
+	public float getStamina() {
 		return stamina;
 	}
 
@@ -235,6 +235,11 @@ public abstract class ComplexUnit extends Unit{
 
 	public double getMagicDamage() {
 		return magicDamage;
+	}
+
+	public void setEnergy(float f) {
+		this.energy = f;
+		
 	}
 	
 }

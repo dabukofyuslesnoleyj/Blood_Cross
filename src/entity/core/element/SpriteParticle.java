@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import entity.core.Animation;
 import entity.core.MapObject;
+import entity.core.particle.Particle;
 
 public class SpriteParticle extends Particle{
 

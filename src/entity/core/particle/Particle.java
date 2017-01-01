@@ -1,57 +1,18 @@
 package entity.core.particle;
 
-import java.awt.image.BufferedImage;
-
-import entity.core.Animation;
 import entity.core.MapObject;
-import game_state.core.PlayState;
-import tile_map.TileMap;
+import entity.core.NPC;
+import entity.core.element.MapElement;
 
-public class Particle extends MapObject{
-	
-	private boolean remove;
-	
-	//if you just want to generate particles. lighter method
-	public Particle(TileMap tm, PlayState state, BufferedImage sprites[], int life, double x, double y) {
-		super(tm, state);
-		
-		this.x = x;
-		this.y = y;
-		
-		this.animation = new Animation();
-		this.animation.setFrames(sprites);
-		this.animation.setDelay(life);
+public abstract class Particle extends MapElement{
 
-	}
-
-	//if you want to bind the particles to a map object
-	public Particle(MapObject obj, TileMap tm, PlayState state, BufferedImage sprites[], int life) {
-		super(tm, state);
+	public Particle(MapObject obj) {
+		super(obj.getTileMap(), obj.getState());
 
 		this.x = obj.getX();
 		this.y = obj.getY();
-		this.width = obj.getWidth();
-		this.height = obj.getHeight();
-		this.cheight = obj.getCheight();
-		this.cwidth = obj.getCwidth();
-
-		this.animation = new Animation();
-		this.animation.setFrames(sprites);
-		this.animation.setDelay(life);
+		this.setMapPosition();
+		
+		this.remove = false;
 	}
-	
-	public void update() {
-		super.update();
-//		System.out.println("PLAY");
-		if(this.animation.hasPlayedOnce()){
-			this.remove = true;
-		}
-
-		this.animation.update();
-	}
-	
-	public boolean shouldRemove() {
-		return remove;
-	}
-
 }

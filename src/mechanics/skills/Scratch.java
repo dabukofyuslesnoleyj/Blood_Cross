@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import entity.core.NPC;
 import entity.core.complex.ComplexUnit;
-import entity.core.element.ParticleEmitter;
+import entity.core.particle.ParticleEmitter;
 import mechanics.skills.core.Skill;
 
 public class Scratch extends Skill{

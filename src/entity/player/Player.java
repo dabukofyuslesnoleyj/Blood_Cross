@@ -11,8 +11,8 @@ import javax.imageio.ImageIO;
 
 import entity.core.NPC;
 import entity.core.complex.loot.Lootable;
-import entity.core.element.ParticleEmitter;
-import entity.core.element.ProjectileEmitter;
+import entity.core.particle.ParticleEmitter;
+import entity.core.particle.ProjectileEmitter;
 import entity.player.complex.ComplexPlayer;
 import game_state.core.PlayState;
 import mechanics.skills.CastFireBall;

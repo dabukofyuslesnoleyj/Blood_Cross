@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.util.Random;
 
 import entity.core.MapObject;
+import entity.core.particle.Particle;
 
 public class RawParticle extends Particle{
 	

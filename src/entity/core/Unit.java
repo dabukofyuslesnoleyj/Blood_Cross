@@ -8,10 +8,20 @@ import tile_map.TileMap;
 public abstract class Unit extends MapObject{
 
 	//unit stuff
-		protected int health;
-		protected int maxHealth;
-		protected int energy;
-		protected int maxEnergy;
+		protected float health;
+		protected float maxHealth;
+		protected float energy;
+		protected float maxEnergy;
+		
+		protected float stamina;
+		protected float maxStamina;
+		
+		protected float berserk;
+		protected float maxBerserk;
+		
+		protected float exp;
+		protected float maxExp;
+		
 		protected boolean dead;
 		protected boolean flinching;
 		protected long flinchTime;
@@ -24,6 +34,16 @@ public abstract class Unit extends MapObject{
 		super(tm, state);
 		this.health = this.maxHealth = maxHealth;
 		this.energy = this.maxEnergy = maxEnergy;
+		
+
+		this.maxStamina = 100;
+		this.stamina = this.maxStamina;
+		
+		this.maxBerserk = 100;
+		this.berserk = 80;
+		
+		this.maxExp = 100;
+		this.exp = 80;
 	}
 	
 	//methods
@@ -104,15 +124,11 @@ public abstract class Unit extends MapObject{
 		this.flinchLength = flinchLength;
 	}
 	
-	public int getEnergy() {
+	public float getEnergy() {
 		return energy;
 	}
 
-	public void setEnergy(int energy) {
-		this.energy = energy;
-	}
-
-	public void setHealth(int health){
+	public void setHealth(float health){
 		if(health > maxHealth)
 			this.health = maxHealth;
 		if(health < 0){
@@ -123,18 +139,42 @@ public abstract class Unit extends MapObject{
 			this.health = health;
 	}
 	
-	public int getHealth() {
+	public float getHealth() {
 		return health;
 	}
 
-	public int getMaxHealth() {
+	public float getMaxHealth() {
 		return maxHealth;
 	}
 
-	public int getMaxEnergy() {
+	public float getMaxEnergy() {
 		return maxEnergy;
 	}
 	
+	public float getStamina() {
+		return stamina;
+	}
+
+	public float getMaxStamina() {
+		return maxStamina;
+	}
+
+	public float getBerserk() {
+		return berserk;
+	}
+
+	public float getMaxBerserk() {
+		return maxBerserk;
+	}
+
+	public float getExp() {
+		return exp;
+	}
+
+	public float getMaxExp() {
+		return maxExp;
+	}
+
 	public boolean isDead() {
 		return isDead;
 	}

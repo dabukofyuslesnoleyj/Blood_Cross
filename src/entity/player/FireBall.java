@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import entity.core.Animation;
-import entity.core.element.ParticleEmitter;
-import entity.core.element.Projectile;
+import entity.core.particle.ParticleEmitter;
+import entity.core.particle.Projectile;
 import game_state.core.PlayState;
 import tile_map.TileMap;
 
