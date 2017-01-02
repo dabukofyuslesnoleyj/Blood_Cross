@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import entity.core.Animation;
-import entity.core.particle.ParticleEmitter;
-import entity.core.particle.Projectile;
+import entity.core.element.ParticleEmitter;
+import entity.core.element.Projectile;
 import game_state.core.PlayState;
 import tile_map.TileMap;
 
@@ -17,7 +17,7 @@ public class FireBall extends Projectile{
 	public FireBall(TileMap tm, boolean isGoingRight, PlayState state) {
 		super(tm, isGoingRight, state);
 		
-		this.movementSpeed = 4;
+		this.movementSpeed = 30;
 		
 		if(isGoingRight)
 			this.dx = movementSpeed;
@@ -67,7 +67,7 @@ public class FireBall extends Projectile{
 			this.setHit();
 		}		
 
-		ParticleEmitter.getInstance().emit(ParticleEmitter.getInstance().generateRawParticles(this, new Color(255,140,0), 8, 5, 20, 1.5, false));
+		ParticleEmitter.getInstance().emit(ParticleEmitter.getInstance().generateRawParticles(this, new Color(255,140,0), 8, 5, 20, 1.5, false, 0, 0));
 		this.animation.update();
 		if(isHit && this.animation.hasPlayedOnce()){
 			this.remove = true;

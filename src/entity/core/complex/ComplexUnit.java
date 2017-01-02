@@ -2,11 +2,13 @@ package entity.core.complex;
 
 import java.util.HashMap;
 
+import entity.core.Animation;
 import entity.core.Unit;
 import game_state.core.PlayState;
 import mechanics.items.Bag;
 import mechanics.items.Item;
 import mechanics.skills.core.Skill;
+import mechanics.skills.core.SkillMap;
 import mechanics.skills.core.SkillSet;
 import tile_map.TileMap;
 
@@ -35,7 +37,7 @@ public abstract class ComplexUnit extends Unit{
 	private double physicalDamage;
 	
 	//skill map
-	private HashMap<String, Skill> skillMap;
+	private HashMap<String, SkillMap> skillMap;
 	
 	//item bag
 	private Bag bag;
@@ -57,7 +59,7 @@ public abstract class ComplexUnit extends Unit{
 		setIntelligence(intelligence);
 		setVitality(vitality);
 		setAgility(agility);
-		skillMap = new HashMap<String, Skill>();
+		skillMap = new HashMap<String, SkillMap>();
 		bag = new Bag();
 		
 	}
@@ -80,7 +82,7 @@ public abstract class ComplexUnit extends Unit{
 	public void addSkillFromSet(String skillName){
 		if(SkillSet.callInstance().isInSet(skillName)){
 			Skill s = SkillSet.callInstance().getSkill(skillName);
-			this.skillMap.put(skillName, s);
+			this.skillMap.put(skillName, new SkillMap(s, false));
 		}
 	}
 	
@@ -93,7 +95,7 @@ public abstract class ComplexUnit extends Unit{
 	
 	public void castSkill(String skillName, ComplexUnit u){
 		if(isInSkills(skillName))
-			skillMap.get(skillName).cast(u);
+			skillMap.get(skillName).getSkill().cast(u);
 	}
 	
 	public void removeSkill(String skillName){
@@ -240,6 +242,19 @@ public abstract class ComplexUnit extends Unit{
 	public void setEnergy(float f) {
 		this.energy = f;
 		
+	}
+	
+	public void setDx(double d){
+		this.dx = d;
+	}
+	
+	public double getDx(){
+		return dx;
+	}
+
+	public Animation getAnimation() {
+		// TODO Auto-generated method stub
+		return this.animation;
 	}
 	
 }

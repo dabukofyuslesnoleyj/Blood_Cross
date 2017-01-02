@@ -1,5 +1,6 @@
 package entity.core.element;
 
+
 public class ProjectileEmitter extends Emitter{
 	
 	private static ProjectileEmitter pe = new ProjectileEmitter();

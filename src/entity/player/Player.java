@@ -1,24 +1,16 @@
 package entity.player;
 
-import java.awt.Color;
+
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import entity.core.NPC;
 import entity.core.complex.loot.Lootable;
-import entity.core.particle.ParticleEmitter;
-import entity.core.particle.ProjectileEmitter;
 import entity.player.complex.ComplexPlayer;
 import game_state.core.PlayState;
-import mechanics.skills.CastFireBall;
-import mechanics.skills.Scratch;
-import mechanics.skills.core.Skill;
-import mechanics.skills.core.SkillSet;
 import sprite.Spritesheet;
 import tile_map.TileMap;
 
@@ -27,6 +19,7 @@ public class Player extends ComplexPlayer{
 	//skill that player is using
 	private boolean firing;
 	private boolean scratching;
+	private boolean dashing;
 
 	private boolean weaponIsDrawn;
 	private boolean drawingWeapon;
@@ -44,16 +37,19 @@ public class Player extends ComplexPlayer{
 	private static final int SCRATCHING = 6;
 	private static final int DRAWING = 7;
 	private static final int KEEPING = 8;
+	private static final int DASHING = 9;
+	
+	private static final int SPRITE_WIDTH = 320;
 	
 	public Player(TileMap tm, int maxHealth, int maxEnergy, PlayState state) {
 		super(tm, 7, 10, 10, 10, 10, 10, maxHealth, maxEnergy, state);
-		this.width = 135;
-		this.height = 135;
-		this.cwidth = 30;
-		this.cheight = 120; //TODO change to fit better
+		this.width = SPRITE_WIDTH;
+		this.height = 320;
+		this.cwidth = 60;
+		this.cheight = 290;//308; //TODO change to fit better
 		
-		this.movementSpeed = 0.6;
-		this.maxSpeed = 1.6;
+		this.movementSpeed = 4.1;
+		this.maxSpeed = 7.6;
 		this.stopSpeed = 0.4;
 		this.fallSpeed = 0.15;
 		this.maxFallSpeed = 10.0;
@@ -69,25 +65,26 @@ public class Player extends ComplexPlayer{
 		//load sprites
 		try {
 			
-			BufferedImage spriteSheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.gif"));
+			BufferedImage spriteSheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.png"));
 			this.spriteMap = new HashMap<Integer, BufferedImage[]>();
 			
 			
 			Spritesheet sh = new Spritesheet(spriteSheet);
 			
-			sh.setThresholds(135, 135);
+			sh.setThresholds(SPRITE_WIDTH, SPRITE_WIDTH);
 			sh.parse();
 			
 			this.spriteMap.put(IDLE, sh.getFrames(0,1,2,3));
-			this.spriteMap.put(WALKING, sh.getFrames(4,5,6,7,8,9));
-			this.spriteMap.put(JUMPING, sh.getFrames(10));
-			this.spriteMap.put(FALLING, sh.getFrames(11,12));
-			this.spriteMap.put(GLIDING, sh.getFrames(13,14));
-			this.spriteMap.put(DRAWING, sh.getFrames(15,16));
-			this.spriteMap.put(FIREBALL, sh.getFrames(17,18,19));
-			this.spriteMap.put(KEEPING, sh.getFrames(20,21));
-			this.spriteMap.put(SCRATCHING, sh.getFrames(22,23));
-
+			this.spriteMap.put(WALKING, sh.getFrames(4,5,6,7,8,9,10,11));
+			this.spriteMap.put(JUMPING, sh.getFrames(12));
+			this.spriteMap.put(FALLING, sh.getFrames(13,14));
+			this.spriteMap.put(GLIDING, sh.getFrames(15,16,17,18));
+			this.spriteMap.put(DRAWING, sh.getFrames(20));
+			this.spriteMap.put(FIREBALL, sh.getFrames(21,22,23,24));
+			this.spriteMap.put(KEEPING, sh.getFrames(26));
+			this.spriteMap.put(SCRATCHING, sh.getFrames(27,28));
+			this.spriteMap.put(DASHING, sh.getFrames(15,16,17,18));
+	
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,14 +96,26 @@ public class Player extends ComplexPlayer{
 		
 		//add skills
 		this.addSkillFromSet("Cast Fireball");
-		this.addSkillFromSet("Scratch");
+		this.addSkillFromSet("Slash");
+		this.addSkillFromSet("Dash");
 	}
 	
 	//methods
 	@Override
 	protected void getNextPosition(){
-		
-		super.getNextPosition();
+		if(this.currAction != DASHING)
+			super.getNextPosition();
+		else {//implement falling physics while dashing
+			dy += fallSpeed;
+			if(dy > 0)
+				jumping = false;
+			if(dy < 0 && !jumping){
+				dy += stopJumpSpeed;
+			}
+			
+			if(dy > maxFallSpeed)
+				dy = maxFallSpeed;			
+		}
 		
 		//cannot move while attacking except on air
 		if((this.currAction == SCRATCHING || this.currAction == FIREBALL) && !(jumping || falling)){
@@ -128,15 +137,21 @@ public class Player extends ComplexPlayer{
 		super.update();
 		
 		if(this.currRow > tileMap.getNumRows()){
-			this.setPosition(100, 100);
+			this.setPosition(200, 500);
 			this.hit(1, 1000);
 		}
 		
 		//check if attacking
 		if(currAction == SCRATCHING){
+			System.out.println("SLASH");
 			if(this.animation.hasPlayedOnce()) {
-//				this.scratch(this.state.getEnemies());
 				this.scratching = false;
+			}
+		}
+		
+		if(currAction == DASHING) {
+			if(this.animation.hasPlayedOnce()) {
+				this.dashing = false;
 			}
 		}
 		
@@ -175,14 +190,26 @@ public class Player extends ComplexPlayer{
 			this.castSkill("Cast Fireball", this);
 		}
 
+
 		//set animations
 		if(this.scratching){
 			if(this.currAction != SCRATCHING){
 				this.currAction = SCRATCHING;
 				this.animation.setFrames(this.spriteMap.get(SCRATCHING));
 				this.animation.setDelay(200);
-				this.width = 135;
-				this.castSkill("Scratch", this);
+				this.width = SPRITE_WIDTH;
+				this.castSkill("Slash", this);
+			}
+		}
+		else if(this.dashing) {
+			if(this.currAction != DASHING){
+				//TODO: implement proper animation
+				this.currAction = DASHING;
+				this.animation.setFrames(this.spriteMap.get(DASHING));
+				this.animation.setDelay(200);
+				this.width = SPRITE_WIDTH;
+				this.castSkill("Dash", this);
+				
 			}
 		}
 		else if(this.drawingWeapon && !keepingWeapon){
@@ -191,7 +218,7 @@ public class Player extends ComplexPlayer{
 				//TODO: Implement proper animation
 				this.animation.setFrames(this.spriteMap.get(DRAWING));
 				this.animation.setDelay(100);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else if(this.firing && !keepingWeapon){
@@ -199,7 +226,7 @@ public class Player extends ComplexPlayer{
 				this.currAction = FIREBALL;
 				this.animation.setFrames(this.spriteMap.get(FIREBALL));
 				this.animation.setDelay(100);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else if(this.keepingWeapon && !this.firing){
@@ -208,7 +235,7 @@ public class Player extends ComplexPlayer{
 				//TODO: Implement proper animation
 				this.animation.setFrames(this.spriteMap.get(KEEPING));
 				this.animation.setDelay(100);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else if(dy > 0){
@@ -217,14 +244,14 @@ public class Player extends ComplexPlayer{
 					this.currAction = GLIDING;
 					this.animation.setFrames(this.spriteMap.get(GLIDING));
 					this.animation.setDelay(100);
-					this.width = 135;
+					this.width = SPRITE_WIDTH;
 				}
 			}
 			else if(this.currAction != FALLING){
 				this.currAction = FALLING;
 				this.animation.setFrames(this.spriteMap.get(FALLING));
 				this.animation.setDelay(100);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else if(dy < 0){
@@ -232,7 +259,7 @@ public class Player extends ComplexPlayer{
 				this.currAction = JUMPING;
 				this.animation.setFrames(this.spriteMap.get(JUMPING));
 				this.animation.setDelay(-1);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else if(this.left || this.right){
@@ -240,7 +267,7 @@ public class Player extends ComplexPlayer{
 				this.currAction = WALKING;
 				this.animation.setFrames(this.spriteMap.get(WALKING));
 				this.animation.setDelay(80);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		else{
@@ -248,14 +275,14 @@ public class Player extends ComplexPlayer{
 				this.currAction = IDLE;
 				this.animation.setFrames(this.spriteMap.get(IDLE));
 				this.animation.setDelay(400);
-				this.width = 135;
+				this.width = SPRITE_WIDTH;
 			}
 		}
 		
 		this.animation.update();
 		
 		//set direction
-		if(this.currAction != SCRATCHING && currAction != FIREBALL){
+		if(this.currAction != SCRATCHING && currAction != FIREBALL && this.currAction != DASHING){
 			if(right)
 				this.isFacingRight = true;
 			if(left)
@@ -296,6 +323,10 @@ public class Player extends ComplexPlayer{
 	
 	public void setGliding(boolean gliding){
 		this.gliding = gliding;
+	}
+	
+	public void setDashing(boolean dashing) {
+		this.dashing = dashing;
 	}
 	
 	public void setKeeping(){
@@ -351,6 +382,10 @@ public class Player extends ComplexPlayer{
 		}
 		if(k == KeyEvent.VK_E){
 			this.setKeeping();
+		}
+		if(k == KeyEvent.VK_SHIFT) {
+			if(this.isWalking() && !this.jumping && !this.falling)
+				this.setDashing(true);
 		}
 	}
 

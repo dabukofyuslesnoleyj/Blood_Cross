@@ -20,16 +20,33 @@ public class ParticleEmitter extends Emitter{
 		return pe;
 	}
 	
-	public ArrayList<Particle> generateRawParticles(MapObject obj, Color color, double life, double size, int amount, double dispersionRate, boolean damaging) {
+	public ArrayList<Particle> generateRawParticles(MapObject obj, Color color, double life, double size, int amount, double dispersionRate, boolean damaging, int xOffset, int yOffset) {
 		ArrayList<Particle> particles = new ArrayList<Particle>();
+		RawParticle rp = null;
 		
 		for(int i = 0; i < amount; i++) {
 			double s = Math.random()*size;
 			double l = Math.random()*(120)+life;
-			particles.add(new RawParticle(obj, color, l, s, dispersionRate, damaging));
+			rp = new RawParticle(obj, color, l, s, dispersionRate, damaging);
+			rp.setOffsets(xOffset, yOffset);
+			particles.add(rp);
 		}
 		
 		return particles;
 	}
-
+	
+	public ArrayList<Particle> generateRawParticles(MapObject obj, Color[] color, double life, double size, int amount, double dispersionRate, boolean damaging, int xOffset, int yOffset) {
+		ArrayList<Particle> particles = new ArrayList<Particle>();
+		RawParticle rp = null;
+		
+		for(int i = 0; i < amount; i++) {
+			double s = Math.random()*size;
+			double l = Math.random()*(120)+life;
+			rp = new RawParticle(obj, color, l, s, dispersionRate, damaging);
+			rp.setOffsets(xOffset, yOffset);
+			particles.add(rp);
+		}
+		
+		return particles;
+	}
 }

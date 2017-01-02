@@ -284,4 +284,24 @@ public abstract class MapObject {
 		this.isFacingRight = isFacingRight;
 	}
 	
+	public double getStopSpeed() {
+		return stopSpeed;
+	}
+
+	public void setStopSpeed(double stopSpeed) {
+		this.stopSpeed = stopSpeed;
+	}
+	
+	public Animation getAnimation() {
+		return animation;
+	}
+
+	public void setAnimation(Animation animation) {
+		this.animation = animation;
+	}
+	
+	public boolean isWalking() {
+		return this.left || this.right;
+	}
+	
 }

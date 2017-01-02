@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import entity.HUD;
 import entity.core.NPC;
-import entity.core.particle.ParticleEmitter;
-import entity.core.particle.ProjectileEmitter;
+import entity.core.element.ParticleEmitter;
+import entity.core.element.ProjectileEmitter;
 import entity.enemies.Slugger;
 import entity.player.Player;
 import entity.player.complex.ComplexPlayer;
@@ -14,7 +14,8 @@ import game_state.core.GameStateManager;
 import game_state.core.PlayState;
 import main.GamePanel;
 import mechanics.skills.CastFireBall;
-import mechanics.skills.Scratch;
+import mechanics.skills.Dash;
+import mechanics.skills.Slash;
 import mechanics.skills.core.SkillSet;
 import tile_map.Background;
 import tile_map.TileMap;
@@ -43,7 +44,8 @@ public class Level1State extends PlayState{
 		this.tilemap.setTween(0.05);
 		
 		SkillSet.callInstance().addSkill("Cast Fireball", new CastFireBall());
-		SkillSet.callInstance().addSkill("Scratch", new Scratch());
+		SkillSet.callInstance().addSkill("Slash", new Slash());
+		SkillSet.callInstance().addSkill("Dash", new Dash());
 		
 		this.bg = new Background("/Backgrounds/grassbg1.png", -0.1);
 		
@@ -51,7 +53,7 @@ public class Level1State extends PlayState{
 		this.players = new ArrayList<ComplexPlayer>();
 		
 		Player p = new Player(tilemap, 5, 2500, this);
-		p.setPosition(100, 100);
+		p.setPosition(100, 500);
 		this.players.add(p);
 		
 		this.players.set(0, new Player(tilemap, 5, 2500, this));
@@ -62,7 +64,7 @@ public class Level1State extends PlayState{
 		this.enemies = new ArrayList<NPC>();
 		
 		Slugger s = new Slugger(tilemap, players.get(0), this);
-		s.setPosition(100, 100);
+		s.setPosition(100, 500);
 		this.enemies.add(s);
 		
 		

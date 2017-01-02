@@ -1,7 +1,7 @@
 package mechanics.skills;
 
 import entity.core.complex.ComplexUnit;
-import entity.core.particle.ProjectileEmitter;
+import entity.core.element.ProjectileEmitter;
 import entity.player.FireBall;
 import mechanics.skills.core.Skill;
 

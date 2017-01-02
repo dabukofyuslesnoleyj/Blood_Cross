@@ -1,5 +1,7 @@
 package mechanics.skills.core;
 
+import java.awt.image.BufferedImage;
+
 import entity.core.complex.ComplexUnit;
 import mechanics.Usable;
 
@@ -31,6 +33,10 @@ public abstract class Skill implements Usable{
 		else{
 			//skill is in cooldown
 		}
+	}
+	
+	public void setAnimation(ComplexUnit u, BufferedImage[] sprites) {
+		u.getAnimation().setFrames(sprites);
 	}
 	
 	public int getEffectValue() {
