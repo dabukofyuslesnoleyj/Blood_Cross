@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import entity.HUD;
 import entity.core.NPC;
+import entity.core.complex.ComplexNPC;
 import entity.core.element.ParticleEmitter;
 import entity.core.element.ProjectileEmitter;
 import entity.enemies.Slugger;
@@ -61,7 +62,7 @@ public class Level1State extends PlayState{
 		
 		this.hud = new HUD(players.get(0));
 		
-		this.enemies = new ArrayList<NPC>();
+		this.enemies = new ArrayList<ComplexNPC>();
 		
 		Slugger s = new Slugger(tilemap, players.get(0), this);
 		s.setPosition(100, 500);
@@ -86,7 +87,7 @@ public class Level1State extends PlayState{
 		
 		//update all enemies
 		for(int i = 0; i < this.enemies.size(); i++){
-			NPC e = enemies.get(i);
+			ComplexNPC e = enemies.get(i);
 			e.update();
 			if(e.isDead()){
 				this.enemies.remove(i);
@@ -120,7 +121,7 @@ public class Level1State extends PlayState{
 		}
 		
 		//draw enemies
-		for(NPC e: this.enemies){
+		for(ComplexNPC e: this.enemies){
 			e.draw(g);
 		}
 		
