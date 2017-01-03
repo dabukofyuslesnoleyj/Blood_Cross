@@ -33,6 +33,8 @@ public abstract class MapObject {
 	protected int cheight;
 	
 	//collision
+	protected int currRow;
+	protected int currCol;
 	protected double xdest;
 	protected double ydest;
 	protected double xtemp;
@@ -83,6 +85,9 @@ public abstract class MapObject {
 	
 	//new collision methods
 	public void checkTileMapCollision(){
+		this.currCol = (int)x / this.tileSize;
+		this.currRow = (int)y / this.tileSize;
+		
 		this.xdest = this.x + this.dx;
 		this.ydest = this.y + this.dy;
 		
@@ -228,6 +233,14 @@ public abstract class MapObject {
 		}
 		
 		return hasCollision;
+	}
+	
+	public int getCurrRow() {
+		return currRow;
+	}
+
+	public int getCurrCol() {
+		return currCol;
 	}
 	
 	public int getCheight() {
