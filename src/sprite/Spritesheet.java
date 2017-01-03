@@ -105,9 +105,10 @@ public class Spritesheet {
 	    int w = img.getWidth(null);
 	    int h = img.getHeight(null);
 	    boolean isValid = false;
+	   
 	    for (int i = 0 ; i < h; i++) {
 	    	for(int j = 0 ; j < w; j++){
-	    		Color c = new Color(img.getRGB(i, j), true);
+	    		Color c = new Color(img.getRGB(j, i), true);
 		        if (c.getAlpha() != 0) {
 		            isValid = true;
 		            break;

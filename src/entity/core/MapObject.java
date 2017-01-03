@@ -39,6 +39,10 @@ public abstract class MapObject {
 	protected double ydest;
 	protected double xtemp;
 	protected double ytemp;
+	protected boolean topLeft_isBlocked;
+	protected boolean topRight_isBlocked;
+	protected boolean bottomLeft_isBlocked;
+	protected boolean bottomRight_isBlocked;
 	
 	//animation
 	protected Animation animation;
@@ -83,8 +87,29 @@ public abstract class MapObject {
 		return new Rectangle((int)x - cwidth, (int)y - cheight, cwidth, cheight);
 	}
 	
-	//new collision methods
+	public void calculateCorners(double x, double y){
+		int leftTile = (int)(x - cwidth / 2) / tileSize;
+        int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
+        int topTile = (int)(y - cheight / 2) / tileSize;
+        int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
+
+        if(topTile < 0 || bottomTile >= tileMap.getNumRows() ||
+                leftTile < 0 || rightTile >= tileMap.getNumCols()) {
+                topLeft_isBlocked = topRight_isBlocked = bottomLeft_isBlocked = bottomRight_isBlocked = false;
+                return;
+        }
+        int tl = tileMap.getType(topTile, leftTile);
+        int tr = tileMap.getType(topTile, rightTile);
+        int bl = tileMap.getType(bottomTile, leftTile);
+        int br = tileMap.getType(bottomTile, rightTile);
+        topLeft_isBlocked = tl == Tile.BLOCKED;
+        topRight_isBlocked = tr == Tile.BLOCKED;
+        bottomLeft_isBlocked = bl == Tile.BLOCKED;
+        bottomRight_isBlocked = br == Tile.BLOCKED;
+	}
+	
 	public void checkTileMapCollision(){
+		
 		this.currCol = (int)x / this.tileSize;
 		this.currRow = (int)y / this.tileSize;
 		
@@ -94,147 +119,52 @@ public abstract class MapObject {
 		this.xtemp = this.x;
 		this.ytemp = this.y;
 		
-		double[] destColBox = getColBox(this.xdest, this.ydest);
 		
-		
-		int leftTile = (int)Math.floor(destColBox[2] / tileSize);
-		int rightTile = (int)Math.ceil((destColBox[3] / tileSize)) - 1;
-		int topTile = (int)Math.floor(destColBox[0] / tileSize);
-		int bottomTile = (int)Math.floor((destColBox[1] / tileSize));
-		
-		/*
-		System.out.println("left:"+leftTile);
-        System.out.println("right:"+rightTile);
-        System.out.println("top:"+topTile);
-        System.out.println("btm:"+bottomTile);
-        System.out.println("dy:"+this.dy);
-        System.out.println("dx:"+this.dx);
-        System.out.println("ytemp:"+this.ytemp);
-        System.out.println("xtemp:"+this.xtemp);
-        System.out.println("yBtm:"+(bottomTile*tileSize));
-        System.out.println("bottom:"+((y + cheight / 2 - 1)));
-        System.out.println("bottomcolbox:"+destColBox[1]);
-        System.out.println("left:"+((x - cwidth / 2)));
-        System.out.println("leftcolbox:"+destColBox[2]);
-        System.out.println("------------");
-        */
-
-        	if(this.dx!=0){
-			//colBox = getColBox(this.xdest, this.y);
-			if(this.dx < 0){
-				if(checkXCollision(leftTile, topTile, bottomTile)){
-					this.dx = 0;
-					
-					
-					int cWidthIsOdd = 0;
-					if(this.cwidth%2==1)
-						cWidthIsOdd = 1;
-					this.xtemp = ((leftTile * tileSize) + tileSize) + (this.cwidth/2) + cWidthIsOdd;
-					/*
-					System.out.println("new xtemp:"+this.xtemp);
-					System.out.println("XCOL");
-					*/
-					
-				}
-				else
-					this.xtemp += this.dx;
+		this.calculateCorners(this.x, this.ydest);
+		if(dy < 0){
+			if(topLeft_isBlocked || topRight_isBlocked){
+				this.dy = 0;
+				this.ytemp = this.currRow * this.tileSize + this.cheight / 2;
 			}
-			else if(this.dx > 0){
-				if(checkXCollision(rightTile, topTile, bottomTile)){
-					this.dx = 0;
-					
-					int cWidthIsOdd = 0;
-					if(this.cwidth%2==1)
-						cWidthIsOdd = 1;
-					this.xtemp = ((rightTile * tileSize)) - (this.cwidth/2) + cWidthIsOdd;
-					/*
-					System.out.println("new xtemp:"+this.xtemp);
-					System.out.println("XCOL");
-					*/
-				}
-				else
-					this.xtemp += this.dx;
+			else
+				this.ytemp += this.dy;
+		}
+		if(dy > 0){
+			if(bottomLeft_isBlocked || bottomRight_isBlocked){
+				this.dy = 0;
+				this.falling = false;
+//no need for this//	this.ytemp = (this.currRow+1) * this.tileSize - this.cheight / 2;
 			}
+			else
+				this.ytemp += this.dy;
 		}
 		
-		destColBox = getColBox(this.xtemp, this.ydest);
-		
-		
-		leftTile = (int)Math.floor(destColBox[2] / tileSize);
-		rightTile = (int)Math.ceil((destColBox[3] / tileSize)) - 1;
-		topTile = (int)Math.floor(destColBox[0] / tileSize);
-		bottomTile = (int)Math.floor((destColBox[1] / tileSize));
-		
-		if(this.dy!=0){
-			//colBox = getColBox(this.x, this.ydest);
-			if(this.dy < 0){
-				if(checkYCollision(topTile, leftTile, rightTile))
-					this.dy = 0;
-				else
-					this.ytemp += this.dy;
+		this.calculateCorners(xdest, y);
+		if(dx < 0){
+			if(topLeft_isBlocked || bottomLeft_isBlocked){
+				this.dx = 0;
+				this.xtemp = this.currCol * this.tileSize + this.cwidth / 2;
 			}
-			else if(this.dy > 0){
-				if(checkYCollision(bottomTile, leftTile, rightTile)){
-					this.dy = 0;
-					this.falling = false;
-					
-					int cHeightIsOdd = 1;
-					if(this.cheight%2==1)
-						cHeightIsOdd = 0;
-					this.ytemp = ((bottomTile * tileSize) - (this.cheight/2)) + cHeightIsOdd;
-					/*
-					System.out.println("new ytemp:"+this.ytemp);
-					System.out.println("collision");
-					*/
-				}				
-				else
-					this.ytemp += this.dy;
+			else
+				this.xtemp += this.dx;
+		}
+		if(dx > 0){
+			if(topRight_isBlocked || bottomRight_isBlocked){
+				this.dx = 0;
+				this.xtemp = (this.currCol+1) * this.tileSize - this.cwidth / 2;
 			}
+			else
+				this.xtemp += this.dx;
 		}
 		
-       		if(!falling){
-			if(!checkYCollision(bottomTile, leftTile, rightTile)){
+		if(!falling){
+			this.calculateCorners(x, ydest+1);
+			if(!bottomLeft_isBlocked && !bottomRight_isBlocked)
 				this.falling = true;
-			}
 		}
 		
 	}
-	
-	private double[] getColBox(double x, double y){
-		double[] colBox = new double[4];
-		colBox[0] = y - this.cheight/2;	//top bound        
-		colBox[1] = y + this.cheight/2 - 1;	//bottom bound 
-		colBox[2] = x - this.cwidth/2;	//left bound       
-		colBox[3] = x + this.cwidth/2 - 1;	//right bound  
-		return colBox;
-	}
-	
-	private boolean checkYCollision(int yTile, int leftTile, int rightTile){
-		boolean hasCollision = false;
-		
-		for(int x = leftTile; x <= rightTile ; x++){
-			if(this.tileMap.getType(yTile, x) == Tile.BLOCKED){
-				hasCollision = true;
-				break;
-			}
-		}
-		
-		return hasCollision;
-	}
-	
-	private boolean checkXCollision(int xTile, int topTile, int bottomTile){
-		boolean hasCollision = false;
-		
-		for(int y = topTile; y < bottomTile ; y++){
-			if(this.tileMap.getType(y, xTile) == Tile.BLOCKED){
-				hasCollision = true;
-				break;
-			}
-		}
-		
-		return hasCollision;
-	}
-	
+
 	public int getCurrRow() {
 		return currRow;
 	}
@@ -242,7 +172,7 @@ public abstract class MapObject {
 	public int getCurrCol() {
 		return currCol;
 	}
-	
+
 	public int getCheight() {
 		return cheight;
 	}
